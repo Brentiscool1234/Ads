@@ -1,0 +1,8 @@
+fastapi>=0.115
+uvicorn>=0.30
+sqlalchemy>=2.0
+pydantic-settings>=2.4
+anthropic>=0.50          # agent chat (optional — app runs without a key)
+# google-ads>=25.0       # uncomment once the developer token is approved
+pytest>=8.0
+httpx>=0.27
