@@ -28,13 +28,33 @@ recommendations), a human review queue, and an agent chat layer.
 
 ## Running it
 
+Requires Python 3.10 or newer (tested on 3.10 and 3.11).
+
+### Windows
+
+```bat
+cd C:\path\to\Ads\backend
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+### macOS / Linux
+
 ```sh
 cd backend
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
 Open http://localhost:8000 — the dashboard is served by the backend.
+
+Always install into a virtual environment (the `.venv` steps above). Installing
+into a system-wide Python is what causes most of the setup problems below.
 
 By default the app uses a **mock Google Ads backend** with two seeded demo
 accounts, so everything works end-to-end without API credentials. Add the
@@ -50,6 +70,33 @@ without it.
 ```sh
 cd backend && python -m pytest tests/
 ```
+
+## Troubleshooting setup
+
+**`pip install` crashes with a traceback mentioning `googletrans`, `httpcore`,
+or `pkg_resources`** — this is a broken Python installation, not a problem with
+this project. It happens when a stray script named after a real package (most
+often `google.py`) has been saved into the Python install directory. Python
+imports that file instead of the real package, and pip crashes before it can do
+anything.
+
+Find it:
+
+```bat
+dir "C:\Users\<you>\AppData\Local\Programs\Python\Python310\google.py"
+```
+
+Rename it so Python stops picking it up (renaming rather than deleting keeps the
+file in case it was something you wrote):
+
+```bat
+ren "C:\Users\<you>\AppData\Local\Programs\Python\Python310\google.py" google_stray.py.bak
+rd /s /q "C:\Users\<you>\AppData\Local\Programs\Python\Python310\__pycache__"
+```
+
+Then run the install again inside a virtual environment. The same applies to any
+stray file shadowing a package name — `email.py`, `json.py`, `random.py`, and so
+on.
 
 ## Going live with the real Google Ads API
 
