@@ -32,14 +32,21 @@ Requires Python 3.10 or newer (tested on 3.10 and 3.11).
 
 ### Windows
 
+Double-click **`backend\setup.bat`**. It creates the virtual environment,
+installs everything, starts the server, and opens the dashboard. Run it again
+any time to start the app.
+
+If you would rather type the commands yourself:
+
 ```bat
 cd C:\path\to\Ads\backend
-python -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+py -3 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+.venv\Scripts\python.exe -m uvicorn app.main:app
 ```
+
+Use `py -3` rather than `python`. On most Windows machines the bare `python`
+command is intercepted by a Microsoft Store shortcut that does nothing.
 
 ### macOS / Linux
 
@@ -80,23 +87,31 @@ often `google.py`) has been saved into the Python install directory. Python
 imports that file instead of the real package, and pip crashes before it can do
 anything.
 
-Find it:
+The fix is to rename that file so Python stops picking it up. Renaming rather
+than deleting keeps it around in case it was something you wrote:
 
 ```bat
-dir "C:\Users\<you>\AppData\Local\Programs\Python\Python310\google.py"
+ren "%LOCALAPPDATA%\Programs\Python\Python310\google.py" google_stray.py.bak
 ```
 
-Rename it so Python stops picking it up (renaming rather than deleting keeps the
-file in case it was something you wrote):
+Confirm it worked — this should report "File Not Found":
 
 ```bat
-ren "C:\Users\<you>\AppData\Local\Programs\Python\Python310\google.py" google_stray.py.bak
-rd /s /q "C:\Users\<you>\AppData\Local\Programs\Python\Python310\__pycache__"
+dir "%LOCALAPPDATA%\Programs\Python\Python310\google.py"
 ```
 
-Then run the install again inside a virtual environment. The same applies to any
-stray file shadowing a package name — `email.py`, `json.py`, `random.py`, and so
-on.
+Then run `setup.bat` again. The same applies to any stray file shadowing a
+package name — `email.py`, `json.py`, `random.py`, and so on.
+
+**`'python' is not recognized`, or Windows offers to install it from the
+Microsoft Store** — Windows ships a placeholder `python` command that opens the
+Store instead of running Python. Use `py -3` instead of `python`, or run
+`setup.bat`, which handles this for you.
+
+**`'uvicorn' is not recognized`** — the dependencies were never installed
+(usually because of one of the two problems above), or they were installed into
+a different Python than the one you are running. Run `setup.bat`, which installs
+and launches using the same interpreter.
 
 ## Going live with the real Google Ads API
 
